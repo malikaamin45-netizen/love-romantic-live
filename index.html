@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Love Romantic Live</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#160c24;color:white;font-family:Arial}
+header{background:#29123d;padding:20px;text-align:center}
+header h2{margin:0;color:#ff55ae}
+nav{display:flex;justify-content:space-around;background:#29123d;padding:14px 4px;position:sticky;top:0}
+nav button{background:none;border:0;color:white;font-size:14px}
+main{padding:16px}
+h3{color:#ff75bc}
+.card{background:#321a47;border-radius:14px;padding:16px;margin:12px 0}
+button.action{background:#ed3997;color:white;border:0;border-radius:20px;padding:12px 20px}
+.room{display:inline-block;background:#48245f;padding:15px;border-radius:12px;margin:5px}
+footer{text-align:center;padding:20px;color:#bbb}
+</style>
+</head>
+<body>
+<header>
+<h2>❤️ Love Romantic Live</h2>
+<p>Make Friends • Share Love • Enjoy Together</p>
+</header>
+<nav>
+<button onclick="show('home')">Home</button>
+<button onclick="show('live')">Live</button>
+<button onclick="show('rooms')">Rooms</button>
+<button onclick="show('profile')">Profile</button>
+</nav>
+<main id="content"></main>
+<footer>❤️ Love Romantic Live ❤️</footer>
+<script>
+function show(page){
+let c=document.getElementById('content');
+if(page==='home'){
+c.innerHTML=`<h3>Welcome to Love Romantic ❤️</h3>
+<div class="card"><h3>🔴 Live Streaming</h3><p>Watch live broadcasts and meet new friends.</p><button class="action" onclick="show('live')">Explore Live</button></div>
+<div class="card"><h3>🎤 Multi Guest Rooms</h3><p>Choose your room size.</p><button class="action" onclick="show('rooms')">Explore Rooms</button></div>`;
+}
+if(page==='live'){
+c.innerHTML=`<h3>🔴 Live Streaming</h3><div class="card"><p>No live broadcasts yet.</p><button class="action" onclick="alert('Live streaming service setup is required')">Go Live</button></div>`;
+}
+if(page==='rooms'){
+c.innerHTML=`<h3>🎤 Video Rooms</h3>
+<div class="room">4 Seats<br><button class="action" onclick="join(4)">Join</button></div>
+<div class="room">6 Seats<br><button class="action" onclick="join(6)">Join</button></div>
+<div class="room">9 Seats<br><button class="action" onclick="join(9)">Join</button></div>
+<div class="room">12 Seats<br><button class="action" onclick="join(12)">Join</button></div>`;
+}
+if(page==='profile'){
+c.innerHTML=`<h3>👤 My Profile</h3><div class="card"><p>Welcome to Love Romantic Live</p><p>Profile setup coming soon.</p></div>`;
+}
+}
+function join(n){
+document.getElementById('content').innerHTML=`<h3>🎤 ${n} Seat Room</h3><div class="card"><p>Room created for ${n} guests.</p><p>Live video service will be connected in the next step.</p><button class="action" onclick="show('rooms')">Back</button></div>`;
+}
+show('home');
+</script>
+</body>
+</html>
