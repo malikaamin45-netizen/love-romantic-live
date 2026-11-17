@@ -1,298 +1,380 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Love Romantic Live</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#160c24;color:white;font-family:Arial}
-header{background:#29123d;padding:20px;text-align:center}
-header h2{color:#ff55ae}
-nav{display:flex;justify-content:space-around;flex-wrap:wrap;
-background:#29123d;padding:12px 2px;position:sticky;top:0}
-nav button{background:none;border:0;color:white;padding:8px;font-size:13px}
-main{padding:16px;padding-bottom:90px}
-.card{background:#321a47;border-radius:15px;padding:16px;margin:12px 0}
-h3{color:#ff75bc}
-button.action{background:#ed3997;color:white;border:0;
-border-radius:22px;padding:12px 18px;margin:5px}
-input{width:100%;padding:13px;margin:8px 0;
-border:0;border-radius:9px}
-.room{display:inline-block;background:#48245f;
-padding:15px;border-radius:12px;margin:5px}
-footer{text-align:center;color:#bbb;padding:20px}
-#status{color:#ff91c8;word-break:break-word}
+body{margin:0;background:#160c24;color:#fff;font-family:Arial,sans-serif}
+header{background:#29123d;padding:18px;text-align:center;border-bottom:1px solid #59346d}
+header h2{margin:0;color:#ff65b7}
+nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:12px;background:#21112f}
+button{border:0;border-radius:9px;padding:11px 15px;background:#ed3997;color:white;font-weight:bold;cursor:pointer}
+button.secondary{background:#49305c}
+button.danger{background:#a52b50}
+main{max-width:700px;margin:auto;padding:16px}
+.panel{background:#291a39;border:1px solid #513563;border-radius:14px;padding:16px;margin:12px 0}
+input,textarea{width:100%;padding:13px;margin:7px 0;border:1px solid #68477c;border-radius:8px;background:#160c24;color:white;font-size:16px}
+textarea{min-height:75px;resize:vertical}
+h3{color:#ff8ac7}
+small,.muted{color:#c9b8d4}
+.room{padding:13px;background:#382448;border-radius:10px;margin:9px 0}
+.room button{margin-top:8px}
+#chatMessages{height:280px;overflow:auto;background:#160c24;border-radius:9px;padding:10px}
+.message{background:#382448;padding:9px;border-radius:9px;margin:7px 0;overflow-wrap:anywhere}
+.hidden{display:none!important}
+#status{padding:8px;color:#ffd2e9}
+footer{text-align:center;color:#bca9c9;padding:20px;font-size:12px}
 </style>
 </head>
 <body>
-
 <header>
-<h2>❤️ Love Romantic Live</h2>
-<p>Make Friends • Share Love • Enjoy Together</p>
-<p id="status">Welcome Guest</p>
+  <h2>💞 Love Romantic Live 💞</h2>
+  <p>Make friends • Chat • Connect safely</p>
 </header>
 
 <nav>
-<button onclick="show('home')">Home</button>
-<button onclick="show('live')">Live</button>
-<button onclick="show('audio')">Audio</button>
-<button onclick="show('rooms')">Rooms</button>
-<button onclick="show('chat')">Chat</button>
-<button onclick="show('profile')">Profile</button>
+  <button onclick="showPage('home')">Home</button>
+  <button onclick="showPage('rooms')">Rooms</button>
+  <button onclick="showPage('chat')">Chat</button>
+  <button onclick="showPage('profile')">Profile</button>
 </nav>
 
-<main id="content"></main>
-<footer>❤️ Love Romantic Live ❤️</footer>
+<main>
+<div id="status">Please sign in to continue.</div>
+
+<section id="loginPage" class="panel">
+  <h3>Login / Sign up</h3>
+  <p class="muted">Enter your mobile number with country code, for example +91XXXXXXXXXX.</p>
+  <input id="phone" type="tel" placeholder="+91 Mobile Number">
+  <div id="recaptcha-container"></div>
+  <button onclick="sendOTP()">Send OTP</button>
+  <input id="otp" inputmode="numeric" placeholder="Enter OTP">
+  <button onclick="verifyOTP()">Verify OTP</button>
+  <hr>
+  <button class="secondary" onclick="googleLogin()">Continue with Google</button>
+</section>
+
+<section id="homePage" class="hidden">
+  <div class="panel">
+    <h3>Welcome to Love Romantic Live 💗</h3>
+    <p>Connect respectfully. Never share passwords, OTPs, home address or private information.</p>
+    <p class="muted">Public rooms and messages may be visible to other signed-in members.</p>
+  </div>
+</section>
+
+<section id="roomsPage" class="hidden">
+  <div class="panel">
+    <h3>Create a text room</h3>
+    <input id="roomName" maxlength="40" placeholder="Room name">
+    <button onclick="createRoom()">Create Room</button>
+  </div>
+  <div class="panel">
+    <h3>Available Rooms</h3>
+    <div id="roomList">Loading rooms...</div>
+  </div>
+</section>
+
+<section id="chatPage" class="hidden">
+  <div class="panel">
+    <h3 id="currentRoomTitle">Room chat</h3>
+    <p class="muted">Keep messages kind. Do not share personal or sensitive information.</p>
+    <div id="chatMessages"></div>
+    <textarea id="messageText" maxlength="500" placeholder="Write a message..."></textarea>
+    <button onclick="sendMessage()">Send Message</button>
+    <button class="danger" onclick="reportRoom()">Report Room</button>
+    <button class="secondary" onclick="showPage('rooms')">Back to Rooms</button>
+  </div>
+</section>
+
+<section id="profilePage" class="hidden">
+  <div class="panel">
+    <h3>Your Profile</h3>
+    <p id="profileEmail">Not signed in</p>
+    <input id="displayName" maxlength="40" placeholder="Your display name">
+    <button onclick="saveProfile()">Save Profile</button>
+    <button class="danger" onclick="logout()">Log Out</button>
+  </div>
+</section>
+</main>
+
+<footer>Love Romantic Live • Be kind • Stay safe</footer>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
-// FIREBASE CONFIGURATION
 const firebaseConfig = {
-apiKey: "AIzaSyCl6sD3qUjyTKOBi1ZXRk9V0-ZxFW6XyAI",
-authDomain: "love-romantic-2d975.firebaseapp.com",
-projectId: "love-romantic-2d975",
-storageBucket: "love-romantic-2d975.firebasestorage.app",
-messagingSenderId: "1073381907111",
-appId: "1:1073381907111:web:ba6ca68172439439511982",
-measurementId: "G-1X1LNX32HP"
+  apiKey: "AIzaSyCl6sD3qUjyTKOBi1ZXRk9V0-ZxFW6XyAI",
+  authDomain: "love-romantic-2d975.firebaseapp.com",
+  projectId: "love-romantic-2d975",
+  storageBucket: "love-romantic-2d975.firebasestorage.app",
+  messagingSenderId: "1073381907111",
+  appId: "1:1073381907111:web:ba6ca68172439439511982",
+  measurementId: "G-1X1LNX32HP"
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
-auth.languageCode = "en";
+const db = firebase.firestore();
 
 let confirmationResult = null;
+let currentUser = null;
+let currentRoomId = null;
+let messageListener = null;
+let roomListener = null;
 let recaptchaVerifier = null;
 
-function message(msg){
-alert(msg);
+function status(message){
+  document.getElementById("status").textContent = message;
 }
 
-function show(page){
-let c=document.getElementById('content');
-
-if(page==='home'){
-c.innerHTML=`
-<h3>Welcome to Love Romantic ❤️</h3>
-<div class="card">
-<h3>🔴 Live Streaming</h3>
-<p>Watch live broadcasts and meet friends.</p>
-<button class="action" onclick="show('live')">Explore Live</button>
-</div>
-<div class="card">
-<h3>🎤 Audio Rooms</h3>
-<p>Talk with friends in audio rooms.</p>
-<button class="action" onclick="show('audio')">Join Audio</button>
-</div>
-<div class="card">
-<h3>📹 Video Rooms</h3>
-<p>4, 6, 9 and 12 seats.</p>
-<button class="action" onclick="show('rooms')">Explore Rooms</button>
-</div>
-<div class="card">
-<h3>👤 Account</h3>
-<button class="action" onclick="show('login')">Login / Signup</button>
-</div>`;
+function showPage(page){
+  const pages = ["login","home","rooms","chat","profile"];
+  pages.forEach(p=>{
+    document.getElementById(p+"Page").classList.toggle("hidden",p!==page);
+  });
+  if(page==="rooms" && currentUser) loadRooms();
+  if(page==="profile" && currentUser){
+    document.getElementById("profileEmail").textContent =
+      currentUser.email || currentUser.phoneNumber || "Signed in";
+  }
 }
 
-if(page==='login'){
-c.innerHTML=`
-<h3>Login / Signup ❤️</h3>
-<div class="card">
-<h3>Mobile Number Login</h3>
-<input id="phone" type="tel"
-placeholder="+91 9876543210">
-<div id="recaptcha-container"></div>
-<button class="action" onclick="sendOTP()">Send OTP</button>
-<div id="otp-area"></div>
-<hr>
-<h3>Google Login</h3>
-<button class="action" onclick="googleLogin()">
-Continue with Google
-</button>
-</div>`;
+function setupRecaptcha(){
+  if(recaptchaVerifier) return;
+  recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+    "recaptcha-container",
+    {size:"normal"},
+    auth
+  );
+  recaptchaVerifier.render();
 }
 
-if(page==='live'){
-c.innerHTML=`
-<h3>🔴 Live Streaming</h3>
-<div class="card">
-<p>Live streaming service is not connected yet.</p>
-</div>`;
-}
-
-if(page==='audio'){
-c.innerHTML=`
-<h3>🎤 Audio Rooms</h3>
-<div class="card">
-<p>Audio room service is not connected yet.</p>
-</div>`;
-}
-
-if(page==='rooms'){
-c.innerHTML=`
-<h3>📹 Video Rooms</h3>
-${[4,6,9,12].map(n=>`
-<div class="room">${n} Seats<br>
-<button class="action" onclick="join(${n})">Join</button>
-</div>`).join('')}`;
-}
-
-if(page==='chat'){
-c.innerHTML=`
-<h3>💬 Private Chat</h3>
-<div class="card">
-<p>Chat service will be connected in the next development step.</p>
-</div>`;
-}
-
-if(page==='profile'){
-let user=auth.currentUser;
-
-if(user){
-c.innerHTML=`
-<h3>👤 My Profile</h3>
-<div class="card">
-<p>Name: ${escapeText(user.displayName || "User")}</p>
-<p>Email: ${escapeText(user.email || "Not available")}</p>
-<p>Phone: ${escapeText(user.phoneNumber || "Not available")}</p>
-<button class="action" onclick="logout()">Logout</button>
-</div>`;
-}else{
-c.innerHTML=`
-<h3>👤 My Profile</h3>
-<div class="card">
-<p>Please login to see your profile.</p>
-<button class="action" onclick="show('login')">Login</button>
-</div>`;
-}
-}
-}
-
-function escapeText(value){
-return String(value).replace(/[&<>"']/g, ch => ({
-'&':'&amp;','<':'&lt;','>':'&gt;',
-'"':'&quot;',"'":'&#39;'
-}[ch]));
-}
-
-// MOBILE OTP
 async function sendOTP(){
-try{
-const phone=document.getElementById('phone').value.trim();
-
-if(!/^\+[1-9]\d{7,14}$/.test(phone)){
-message("Enter mobile number with country code. Example: +919876543210");
-return;
+  const phone = document.getElementById("phone").value.trim();
+  if(!phone.startsWith("+") || phone.length < 9){
+    alert("Country code ke saath mobile number likhein. Example: +91XXXXXXXXXX");
+    return;
+  }
+  try{
+    setupRecaptcha();
+    confirmationResult = await auth.signInWithPhoneNumber(phone,recaptchaVerifier);
+    alert("OTP bhej diya gaya hai. Apna OTP enter karein.");
+  }catch(error){
+    alert("OTP error: "+error.message);
+    if(recaptchaVerifier){
+      recaptchaVerifier.clear();
+      recaptchaVerifier = null;
+      document.getElementById("recaptcha-container").innerHTML = "";
+    }
+  }
 }
 
-if(recaptchaVerifier){
-recaptchaVerifier.clear();
-recaptchaVerifier=null;
-}
-
-recaptchaVerifier=new firebase.auth.RecaptchaVerifier(
-'recaptcha-container',
-{size:'normal'},
-auth
-);
-
-await recaptchaVerifier.render();
-
-confirmationResult=await auth.signInWithPhoneNumber(
-phone,
-recaptchaVerifier
-);
-
-document.getElementById('otp-area').innerHTML=`
-<input id="otp" type="text"
-inputmode="numeric" placeholder="Enter OTP">
-<button class="action" onclick="verifyOTP()">Verify OTP</button>
-`;
-
-message("OTP sent. Please check your phone.");
-
-}catch(error){
-console.error(error);
-message("OTP Error: "+error.message);
-if(recaptchaVerifier){
-recaptchaVerifier.clear();
-recaptchaVerifier=null;
-}
-}
-}
-
-// VERIFY OTP
 async function verifyOTP(){
-try{
-const otp=document.getElementById('otp').value.trim();
-
-if(!otp){
-message("Please enter OTP");
-return;
+  const otp = document.getElementById("otp").value.trim();
+  if(!confirmationResult || !otp){
+    alert("Pehle OTP bhejein, phir OTP enter karein.");
+    return;
+  }
+  try{
+    await confirmationResult.confirm(otp);
+  }catch(error){
+    alert("OTP verify nahi hua: "+error.message);
+  }
 }
 
-await confirmationResult.confirm(otp);
-message("Login successful ❤️");
-show('profile');
-
-}catch(error){
-console.error(error);
-message("OTP verification failed: "+error.message);
-}
-}
-
-// GOOGLE LOGIN
 async function googleLogin(){
-try{
-const provider=new firebase.auth.GoogleAuthProvider();
-await auth.signInWithPopup(provider);
-message("Google Login successful ❤️");
-show('profile');
-
-}catch(error){
-console.error(error);
-message("Google Login Error: "+error.message);
-}
+  try{
+    const provider = new firebase.auth.GoogleAuthProvider();
+    await auth.signInWithPopup(provider);
+  }catch(error){
+    alert("Google login error: "+error.message);
+  }
 }
 
-// LOGOUT
-async function logout(){
-try{
-await auth.signOut();
-message("You are logged out");
-show('home');
-}catch(error){
-message(error.message);
-}
-}
-
-// AUTH STATUS
-auth.onAuthStateChanged(user=>{
-const status=document.getElementById('status');
-
-if(user){
-status.textContent="Logged in: "+(user.displayName || user.phoneNumber || user.email);
-}else{
-status.textContent="Welcome Guest";
-}
+auth.onAuthStateChanged(async user=>{
+  currentUser = user;
+  if(user){
+    status("Signed in successfully.");
+    showPage("home");
+    document.getElementById("profileEmail").textContent =
+      user.email || user.phoneNumber || "Signed in";
+    try{
+      await db.collection("users").doc(user.uid).set({
+        uid:user.uid,
+        displayName:user.displayName || "Member",
+        email:user.email || null,
+        phoneNumber:user.phoneNumber || null,
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      },{merge:true});
+    }catch(error){
+      status("Profile save issue: "+error.message);
+    }
+  }else{
+    status("Please sign in to continue.");
+    showPage("login");
+  }
 });
 
-function join(n){
-document.getElementById('content').innerHTML=`
-<h3>🎤 ${n} Seat Room</h3>
-<div class="card">
-<p>${n} guest room selected.</p>
-<p>Video service is not connected yet.</p>
-<button class="action" onclick="show('rooms')">Back</button>
-</div>`;
+async function saveProfile(){
+  if(!currentUser) return;
+  const name = document.getElementById("displayName").value.trim();
+  if(name.length < 2){
+    alert("Display name kam se kam 2 characters ka hona chahiye.");
+    return;
+  }
+  try{
+    await db.collection("users").doc(currentUser.uid).set({
+      displayName:name,
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    },{merge:true});
+    alert("Profile saved.");
+  }catch(error){
+    alert("Profile save error: "+error.message);
+  }
 }
 
-show('home');
+async function createRoom(){
+  if(!currentUser) return;
+  const name = document.getElementById("roomName").value.trim();
+  if(name.length < 3){
+    alert("Room name kam se kam 3 characters ka likhein.");
+    return;
+  }
+  try{
+    await db.collection("rooms").add({
+      name:name,
+      ownerId:currentUser.uid,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+      type:"text"
+    });
+    document.getElementById("roomName").value="";
+    alert("Room created.");
+    loadRooms();
+  }catch(error){
+    alert("Room create error: "+error.message);
+  }
+}
+
+function loadRooms(){
+  if(!currentUser) return;
+  if(roomListener) roomListener();
+  roomListener = db.collection("rooms")
+    .orderBy("createdAt","desc")
+    .limit(30)
+    .onSnapshot(snapshot=>{
+      const list = document.getElementById("roomList");
+      list.innerHTML="";
+      if(snapshot.empty){
+        list.textContent="Abhi koi room nahi hai. Pehla room create karein.";
+        return;
+      }
+      snapshot.forEach(doc=>{
+        const room=doc.data();
+        const item=document.createElement("div");
+        item.className="room";
+        const title=document.createElement("strong");
+        title.textContent=room.name || "Text Room";
+        const type=document.createElement("p");
+        type.className="muted";
+        type.textContent="Text chat room";
+        const join=document.createElement("button");
+        join.textContent="Open Room";
+        join.onclick=()=>openRoom(doc.id,room.name || "Text Room");
+        item.append(title,type,join);
+        list.appendChild(item);
+      });
+    },error=>{
+      status("Room loading error: "+error.message);
+    });
+}
+
+function openRoom(roomId,roomName){
+  if(!currentUser) return;
+  currentRoomId=roomId;
+  document.getElementById("currentRoomTitle").textContent=roomName;
+  showPage("chat");
+  if(messageListener) messageListener();
+  document.getElementById("chatMessages").innerHTML="Loading messages...";
+  messageListener=db.collection("rooms").doc(roomId)
+    .collection("messages")
+    .orderBy("createdAt","asc")
+    .limit(100)
+    .onSnapshot(snapshot=>{
+      const area=document.getElementById("chatMessages");
+      area.innerHTML="";
+      snapshot.forEach(doc=>{
+        const data=doc.data();
+        const msg=document.createElement("div");
+        msg.className="message";
+        const who=document.createElement("strong");
+        who.textContent=(data.displayName || "Member")+": ";
+        const body=document.createElement("span");
+        body.textContent=data.text || "";
+        msg.append(who,body);
+        area.appendChild(msg);
+      });
+      area.scrollTop=area.scrollHeight;
+    },error=>{
+      status("Chat loading error: "+error.message);
+    });
+}
+
+async function sendMessage(){
+  if(!currentUser || !currentRoomId) return;
+  const input=document.getElementById("messageText");
+  const text=input.value.trim();
+  if(!text) return;
+  if(text.length>500){
+    alert("Message bohat lamba hai.");
+    return;
+  }
+  try{
+    const profile=await db.collection("users").doc(currentUser.uid).get();
+    const name=profile.exists ? (profile.data().displayName || "Member") : "Member";
+    await db.collection("rooms").doc(currentRoomId)
+      .collection("messages").add({
+        uid:currentUser.uid,
+        displayName:name,
+        text:text,
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      });
+    input.value="";
+  }catch(error){
+    alert("Message send error: "+error.message);
+  }
+}
+
+async function reportRoom(){
+  if(!currentUser || !currentRoomId) return;
+  const reason=prompt("Report reason likhein:");
+  if(!reason || !reason.trim()) return;
+  try{
+    await db.collection("reports").add({
+      reporterId:currentUser.uid,
+      roomId:currentRoomId,
+      reason:reason.trim().slice(0,300),
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    alert("Report submit ho gayi.");
+  }catch(error){
+    alert("Report error: "+error.message);
+  }
+}
+
+async function logout(){
+  try{
+    if(messageListener) messageListener();
+    if(roomListener) roomListener();
+    await auth.signOut();
+  }catch(error){
+    alert("Logout error: "+error.message);
+  }
+}
 </script>
 </body>
 </html>
